@@ -7,8 +7,9 @@ import { StatsCard } from '../components/dashboard/StatsCard'
 import { AssetTable } from '../components/dashboard/AssetTable'
 import { RiskDistributionChart, AssetsVsVulnsChart } from '../components/dashboard/Charts'
 import { AIInsights } from '../components/dashboard/AIInsights'
-import { generateScanData, ScanData } from '../data/mockData'
+import { ScanData } from '../data/mockData'
 import { cn } from '../lib/utils'
+import { runSecurityAudit } from '../services/api'
 
 const portRisk: Record<string, string> = {
   high:   'text-red-400 border border-red-500/20 bg-red-500/5',
@@ -19,11 +20,79 @@ const portRisk: Record<string, string> = {
 export default function Dashboard() {
   const navigate = useNavigate()
   const [data, setData] = useState<ScanData | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const domain = sessionStorage.getItem('ss-domain') || 'example.com'
-    const timer = setTimeout(() => setData(generateScanData(domain)), 400)
-    return () => clearTimeout(timer)
+    
+    const fetchAudit = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        const auditData = await runSecurityAudit(domain)
+        
+        // Transform API response to ScanData format
+        const scanData: ScanData = {
+          domain: auditData.domain,
+          scannedAt: new Date(),
+          totalAssets: auditData.audit_results.length || 0,
+          vulnerabilities: 0,
+          highRisk: 0,
+          riskScore: 65,
+          assets: auditData.audit_results.map((result: any, idx: number) => ({
+            id: `${idx}`,
+            name: result.subdomain,
+            type: 'Server' as const,
+            status: 'Online' as const,
+            risk: 'Medium' as const,
+            ip: result.ip || '0.0.0.0'
+          })),
+          exposedPorts: auditData.audit_results.flatMap((result: any) => 
+            (result.shodan_data?.ports || []).map((port: number, idx: number) => ({
+              port,
+              service: result.shodan_data?.services?.[idx] || 'Unknown',
+              risk: 'medium' as const,
+              description: 'Detected by Shodan scan'
+            }))
+          ),
+          riskDistribution: [
+            { name: 'High', value: 30, color: '#ef4444' },
+            { name: 'Medium', value: 45, color: '#f59e0b' },
+            { name: 'Low', value: 25, color: '#10b981' }
+          ],
+          assetsVsVulns: [
+            { category: 'Scanned', assets: auditData.audit_results.length || 0, vulns: 0 }
+          ],
+          aiInsights: auditData.intelligence ? [
+            {
+              id: '1',
+              title: 'Security Assessment Summary',
+              severity: auditData.intelligence.risk_score >= 70 ? 'high' : auditData.intelligence.risk_score >= 40 ? 'medium' : 'low',
+              description: auditData.intelligence.security_summary,
+              recommendation: auditData.intelligence.actionable_fixes?.[0] || 'Review security configuration'
+            },
+            ...((auditData.intelligence.actionable_fixes || []).slice(1).map((fix: string, idx: number) => ({
+              id: `${idx + 2}`,
+              title: `Action Item ${idx + 1}`,
+              severity: 'medium' as const,
+              description: fix,
+              recommendation: 'Implement this security fix'
+            })))
+          ] : []
+        }
+        
+        setData(scanData)
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to fetch audit data'
+        setError(errorMessage)
+        console.error('Audit error:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchAudit()
   }, [])
 
   if (!data) {
@@ -31,8 +100,22 @@ export default function Dashboard() {
       <div className="min-h-screen bg-black flex items-center justify-center text-white">
         <Navbar />
         <div className="text-center pt-16">
-          <div className="w-10 h-10 border-2 border-white/20 border-t-white rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-white/60 text-sm">Loading scan results...</p>
+          {error ? (
+            <>
+              <p className="text-red-400 text-sm mb-4">⚠️ {error}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 transition"
+              >
+                Retry
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="w-10 h-10 border-2 border-white/20 border-t-white rounded-full animate-spin mx-auto mb-4" />
+              <p className="text-white/60 text-sm">Loading scan results...</p>
+            </>
+          )}
         </div>
       </div>
     )
@@ -71,14 +154,85 @@ export default function Dashboard() {
               </p>
             </div>
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              onClick={() => navigate('/setup')}
-              className="px-5 py-2 rounded-full border border-white/20 text-sm text-white/70 hover:text-white"
-            >
-              <RefreshCw className="inline w-4 h-4 mr-1" />
-              New Scan
-            </motion.button>
+            <div className="flex gap-3">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                onClick={() => {
+                  setData(null)
+                  setError(null)
+                  setLoading(true)
+                  const domain = sessionStorage.getItem('ss-domain') || 'example.com'
+                  runSecurityAudit(domain)
+                    .then(auditData => {
+                      const scanData: ScanData = {
+                        domain: auditData.domain,
+                        scannedAt: new Date(),
+                        totalAssets: auditData.audit_results.length || 0,
+                        vulnerabilities: 0,
+                        highRisk: 0,
+                        riskScore: 65,
+                        assets: auditData.audit_results.map((result: any, idx: number) => ({
+                          id: `${idx}`,
+                          name: result.subdomain,
+                          type: 'Server' as const,
+                          status: 'Online' as const,
+                          risk: 'Medium' as const,
+                          ip: result.ip || '0.0.0.0'
+                        })),
+                        exposedPorts: auditData.audit_results.flatMap((result: any) => 
+                          (result.shodan_data?.ports || []).map((port: number, idx: number) => ({
+                            port,
+                            service: result.shodan_data?.services?.[idx] || 'Unknown',
+                            risk: 'medium' as const,
+                            description: 'Detected by Shodan scan'
+                          }))
+                        ),
+                        riskDistribution: [
+                          { name: 'High', value: 30, color: '#ef4444' },
+                          { name: 'Medium', value: 45, color: '#f59e0b' },
+                          { name: 'Low', value: 25, color: '#10b981' }
+                        ],
+                        assetsVsVulns: [
+                          { category: 'Scanned', assets: auditData.audit_results.length || 0, vulns: 0 }
+                        ],
+                        aiInsights: auditData.intelligence ? [
+                          {
+                            id: '1',
+                            title: 'Security Assessment Summary',
+                            severity: auditData.intelligence.risk_score >= 70 ? 'high' : auditData.intelligence.risk_score >= 40 ? 'medium' : 'low',
+                            description: auditData.intelligence.security_summary,
+                            recommendation: auditData.intelligence.actionable_fixes?.[0] || 'Review security configuration'
+                          },
+                          ...((auditData.intelligence.actionable_fixes || []).slice(1).map((fix: string, idx: number) => ({
+                            id: `${idx + 2}`,
+                            title: `Action Item ${idx + 1}`,
+                            severity: 'medium' as const,
+                            description: fix,
+                            recommendation: 'Implement this security fix'
+                          })))
+                        ] : []
+                      }
+                      setData(scanData)
+                    })
+                    .catch((err: any) => {
+                      setError(err.message || 'Failed to refresh scan')
+                    })
+                    .finally(() => setLoading(false))
+                }}
+                className="px-5 py-2 rounded-full border border-white/20 text-sm text-white/70 hover:text-white disabled:opacity-50"
+                disabled={loading}
+              >
+                <RefreshCw className={cn("inline w-4 h-4 mr-1", loading && "animate-spin")} />
+                Refresh
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                onClick={() => navigate('/setup')}
+                className="px-5 py-2 rounded-full border border-white/20 text-sm text-white/70 hover:text-white"
+              >
+                New Scan
+              </motion.button>
+            </div>
           </motion.div>
 
           {/* STATS */}

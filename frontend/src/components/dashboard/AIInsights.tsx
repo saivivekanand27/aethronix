@@ -21,6 +21,17 @@ const actionItems = [
 export function AIInsights({ insights }: { insights: AIInsight[] }) {
   const navigate = useNavigate()
 
+  // Generate dynamic action items from insights
+  const dynamicActionItems = insights.map((insight, idx) => ({
+    done: false,
+    text: insight.recommendation
+  }))
+
+  // Use dynamic items if available, otherwise fallback to static
+  const displayActionItems = dynamicActionItems.length > 0 ? dynamicActionItems : actionItems
+
+  console.log(displayActionItems);
+
   return (
     <div className="space-y-6">
       {/* Insight cards */}
@@ -71,12 +82,11 @@ export function AIInsights({ insights }: { insights: AIInsight[] }) {
         <h2 className="font-semibold text-white mb-1">What This Means</h2>
         <p className="text-sm text-gray-500 mb-4">Simple, jargon-free explanation</p>
         <p className="text-sm text-gray-400 leading-relaxed">
-          Your infrastructure has{' '}
-          <span className="text-white font-medium">several open doors</span> that attackers could
-          use to gain unauthorized access. The most critical issue is your database being accessible
-          from the internet — this is like leaving your filing cabinet unlocked on a public street.
-          Additionally, the development server running publicly means anyone can see work-in-progress
-          code and potentially exploit early vulnerabilities.
+          {insights.length > 0 ? (
+            insights[0].description
+          ) : (
+            "Your infrastructure has several open doors that attackers could use to gain unauthorized access. The most critical issue is your database being accessible from the internet — this is like leaving your filing cabinet unlocked on a public street. Additionally, the development server running publicly means anyone can see work-in-progress code and potentially exploit early vulnerabilities."
+          )}
         </p>
       </div>
 
@@ -84,7 +94,7 @@ export function AIInsights({ insights }: { insights: AIInsight[] }) {
       <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
         <h2 className="font-semibold text-white mb-5">Actionable Checklist</h2>
         <ul className="space-y-3">
-          {actionItems.map((item, i) => (
+          {displayActionItems.map((item, i) => (
             <li key={i} className="flex items-center gap-3">
               <div
                 className={cn(

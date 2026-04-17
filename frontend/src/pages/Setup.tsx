@@ -2,7 +2,7 @@ import { useState, FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
-  Shield, Globe, Server, Network,
+  Shield, Globe, Network,
   ArrowLeft, ChevronRight, Loader2
 } from 'lucide-react'
 import { Input } from '../components/ui/Input'
@@ -19,15 +19,22 @@ const SCAN_STEPS = [
 export default function Setup() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
-  const [form, setForm] = useState({ domain: '', subdomains: '', ip: '', portRange: '1-1024' })
+  const [form, setForm] = useState({ target: '', subdomains: '', portRange: '1-1024' })
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const validate = () => {
     const e: Record<string, string> = {}
-    if (!form.domain.trim()) {
-      e.domain = 'Domain is required'
-    } else if (!/^[a-zA-Z0-9][a-zA-Z0-9\-_.]+\.[a-zA-Z]{2,}$/.test(form.domain.trim())) {
-      e.domain = 'Enter a valid domain (e.g. example.com)'
+    if (!form.target.trim()) {
+      e.target = 'Domain or IP address is required'
+    } else {
+      const target = form.target.trim()
+      // Check if it's a valid domain or IP
+      const isDomain = /^[a-zA-Z0-9][a-zA-Z0-9\-_.]+\.[a-zA-Z]{2,}$/.test(target)
+      const isIP = /^(\d{1,3}\.){3}\d{1,3}(\/\d{1,2})?$/.test(target)
+      
+      if (!isDomain && !isIP) {
+        e.target = 'Enter a valid domain (e.g. example.com) or IP (e.g. 192.168.1.0/24)'
+      }
     }
     return e
   }
@@ -37,7 +44,7 @@ export default function Setup() {
     const errs = validate()
     if (Object.keys(errs).length) { setErrors(errs); return }
     setLoading(true)
-    sessionStorage.setItem('ss-domain', form.domain.trim())
+    sessionStorage.setItem('ss-domain', form.target.trim())
     setTimeout(() => navigate('/dashboard'), 2200)
   }
 
@@ -91,32 +98,24 @@ export default function Setup() {
             <form onSubmit={handleSubmit} className="space-y-5 relative">
 
               <Input
-                label="Domain *"
-                placeholder="example.com"
+                label="Domain or IP *"
+                placeholder="example.com or 192.168.1.0/24"
                 prefix={<Globe className="w-4 h-4 text-white/60" />}
-                value={form.domain}
+                value={form.target}
                 onChange={e => {
-                  setForm(f => ({ ...f, domain: e.target.value }))
-                  setErrors(v => ({ ...v, domain: '' }))
+                  setForm(f => ({ ...f, target: e.target.value }))
+                  setErrors(v => ({ ...v, target: '' }))
                 }}
-                error={errors.domain}
-                hint="Primary domain to scan"
+                error={errors.target}
+                hint="Enter domain, subdomain, or IP/CIDR to scan"
               />
 
               <Input
-                label="Subdomains"
+                label="Additional Subdomains"
                 placeholder="api, admin, mail"
                 value={form.subdomains}
                 onChange={e => setForm(f => ({ ...f, subdomains: e.target.value }))}
                 hint="Optional — auto-discovered if blank"
-              />
-
-              <Input
-                label="IP Address / CIDR"
-                placeholder="192.168.1.0/24"
-                prefix={<Server className="w-4 h-4 text-white/60" />}
-                value={form.ip}
-                onChange={e => setForm(f => ({ ...f, ip: e.target.value }))}
               />
 
               <Input
