@@ -1,3 +1,4 @@
-.env
+frontend1
+securesight
 node_modules
-dist
+.env
