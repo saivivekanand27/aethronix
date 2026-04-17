@@ -1,4 +1,4 @@
 frontend1
 securesight
 node_modules
-.env
+# .env
