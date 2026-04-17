@@ -6,7 +6,6 @@ import {
   ArrowLeft, ChevronRight, Loader2
 } from 'lucide-react'
 import { Input } from '../components/ui/Input'
-import { Button } from '../components/ui/Button'
 
 const SCAN_STEPS = [
   'Resolving DNS records...',
