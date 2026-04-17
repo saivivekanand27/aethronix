@@ -1,0 +1,1 @@
+{"version":3,"file":"securityTrails.d.ts","sourceRoot":"","sources":["securityTrails.ts"],"names":[],"mappings":"AAIA,MAAM,WAAW,eAAe;IAC5B,UAAU,EAAE,MAAM,EAAE,CAAC;IACrB,IAAI,EAAE;QACF,aAAa,EAAE,OAAO,CAAC;KAC1B,CAAC;CACL;AAED,eAAO,MAAM,aAAa,GAAU,QAAQ,MAAM,KAAG,OAAO,CAAC,eAAe,CA0B3E,CAAC"}
