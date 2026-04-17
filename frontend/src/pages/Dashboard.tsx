@@ -11,9 +11,9 @@ import { generateScanData, ScanData } from '../data/mockData'
 import { cn } from '../lib/utils'
 
 const portRisk: Record<string, string> = {
-  high:   'bg-red-950 text-red-400 border border-red-900',
-  medium: 'bg-amber-950 text-amber-400 border border-amber-900',
-  low:    'bg-green-950 text-green-400 border border-green-900',
+  high:   'text-red-400 border border-red-500/20 bg-red-500/5',
+  medium: 'text-amber-400 border border-amber-500/20 bg-amber-500/5',
+  low:    'text-green-400 border border-green-500/20 bg-green-500/5',
 }
 
 export default function Dashboard() {
@@ -28,176 +28,144 @@ export default function Dashboard() {
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center text-white">
         <Navbar />
         <div className="text-center pt-16">
-          <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-500 text-sm">Loading scan results...</p>
+          <div className="w-10 h-10 border-2 border-white/20 border-t-white rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-white/60 text-sm">Loading scan results...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-black text-white font-['General_Sans'] overflow-hidden">
       <Navbar />
-      <div className="pt-16">
-        <div className="max-w-7xl mx-auto px-6 py-10 space-y-10">
 
-          {/* Page header */}
+      {/* 🔥 SAME HERO-STYLE BACKGROUND */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-blue-700/15 rounded-full blur-3xl animate-blob" />
+        <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-purple-700/10 rounded-full blur-3xl animate-blob animation-delay-2000" />
+      </div>
+
+      <div className="pt-20 relative z-10">
+        <div className="max-w-7xl mx-auto px-6 space-y-12">
+
+          {/* HEADER */}
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-start justify-between gap-4"
+            className="flex justify-between items-start"
           >
             <div>
-              <p className="text-sm text-gray-600 mb-1">Scan results for</p>
-              <h1 className="text-3xl font-bold text-white">{data.domain}</h1>
-              <p className="text-sm text-gray-600 mt-1">
-                Scanned {data.scannedAt.toLocaleString()} · {data.totalAssets} assets discovered
+              <p className="text-sm text-white/50 mb-1">Scan results for</p>
+
+              <h1 className="text-4xl font-medium leading-tight">
+                <span className="bg-[linear-gradient(144.5deg,_#ffffff,_rgba(255,255,255,0.4))] bg-clip-text text-transparent">
+                  {data.domain}
+                </span>
+              </h1>
+
+              <p className="text-sm text-white/50 mt-2">
+                {data.totalAssets} assets · {data.scannedAt.toLocaleString()}
               </p>
             </div>
-            <button
+
+            <motion.button
+              whileHover={{ scale: 1.05 }}
               onClick={() => navigate('/setup')}
-              className="flex-shrink-0 flex items-center gap-2 px-4 py-2 text-sm text-gray-400 hover:text-white border border-gray-800 hover:border-gray-700 rounded-xl transition-colors"
+              className="px-5 py-2 rounded-full border border-white/20 text-sm text-white/70 hover:text-white"
             >
-              <RefreshCw className="w-4 h-4" /> New Scan
-            </button>
+              <RefreshCw className="inline w-4 h-4 mr-1" />
+              New Scan
+            </motion.button>
           </motion.div>
 
-          {/* Stats grid */}
+          {/* STATS */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <StatsCard title="Total Assets"      value={data.totalAssets}  icon={Server}       accentColor="blue"  delta="+3 new"            deltaDirection="up" />
-            <StatsCard title="Vulnerabilities"   value={data.vulnerabilities} icon={AlertTriangle} accentColor="amber" subtitle="Across all assets" />
-            <StatsCard title="High Risk Issues"  value={data.highRisk}     icon={AlertOctagon} accentColor="red"   delta="Needs attention"   deltaDirection="up" />
-            <StatsCard
-              title="Risk Score"
-              value={`${data.riskScore}/100`}
-              icon={Activity}
-              accentColor={data.riskScore >= 70 ? 'red' : data.riskScore >= 40 ? 'amber' : 'green'}
-              subtitle={data.riskScore >= 70 ? 'Critical risk' : data.riskScore >= 40 ? 'Moderate risk' : 'Low risk'}
-            />
+            <StatsCard title="Assets" value={data.totalAssets} icon={Server} accentColor="blue" />
+            <StatsCard title="Vulnerabilities" value={data.vulnerabilities} icon={AlertTriangle} accentColor="amber" />
+            <StatsCard title="High Risk" value={data.highRisk} icon={AlertOctagon} accentColor="red" />
+            <StatsCard title="Risk Score" value={`${data.riskScore}/100`} icon={Activity} accentColor="green" />
           </div>
 
-          {/* Main 3-col grid */}
-          <div className="grid lg:grid-cols-3 gap-6">
+          {/* MAIN GRID */}
+          <div className="grid lg:grid-cols-3 gap-8">
 
-            {/* Left — 2 cols */}
-            <div className="lg:col-span-2 space-y-6">
-              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+            {/* LEFT */}
+            <div className="lg:col-span-2 space-y-8">
+
+              {/* TABLE */}
+              <div className="border border-white/10 rounded-xl overflow-hidden bg-black/40">
                 <AssetTable assets={data.assets} />
-              </motion.div>
+              </div>
 
-              {/* Exposed Ports */}
-              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-                <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-                  <div className="px-6 py-4 border-b border-gray-800">
-                    <h2 className="font-semibold text-white">Exposed Ports</h2>
-                    <p className="text-sm text-gray-500 mt-0.5">{data.exposedPorts.length} open ports detected</p>
-                  </div>
-                  <div className="p-6 space-y-6">
-                    {/* Port badges */}
-                    <div className="flex flex-wrap gap-2">
-                      {data.exposedPorts.map(p => (
-                        <span
-                          key={p.port}
-                          className={cn(
-                            'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-mono font-medium',
-                            portRisk[p.risk]
-                          )}
-                        >
-                          <span className="font-bold">{p.port}</span>
-                          <span className="opacity-50">({p.service})</span>
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Ports summary card */}
-                    <div className="bg-gray-800/50 border border-gray-700/50 rounded-xl p-5">
-                      <h3 className="font-semibold text-white mb-2">Ports Summary</h3>
-                      <p className="text-sm text-gray-400 leading-relaxed mb-5">
-                        These ports are open and accessible from the internet. Open ports allow
-                        external systems to communicate with your server. If not properly secured,
-                        they can be used as entry points for attackers.
-                      </p>
-                      <div className="space-y-2.5">
-                        {data.exposedPorts.slice(0, 5).map(p => (
-                          <div key={p.port} className="flex items-start gap-3 text-sm">
-                            <span className={cn(
-                              'font-mono font-bold w-16 flex-shrink-0 mt-0.5',
-                              p.risk === 'high' ? 'text-red-400' : p.risk === 'medium' ? 'text-amber-400' : 'text-green-400'
-                            )}>
-                              :{p.port}
-                            </span>
-                            <span className="text-gray-500 w-20 flex-shrink-0">{p.service}</span>
-                            <span className="text-gray-600 text-xs leading-relaxed">{p.description}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+              {/* PORTS */}
+              <div className="space-y-5">
+                <div>
+                  <h2 className="text-lg font-medium text-white">Exposed Ports</h2>
+                  <p className="text-sm text-white/50">{data.exposedPorts.length} ports detected</p>
                 </div>
-              </motion.div>
+
+                <div className="flex flex-wrap gap-2">
+                  {data.exposedPorts.map(p => (
+                    <span key={p.port} className={cn(
+                      'px-3 py-1 rounded-md text-sm font-mono',
+                      portRisk[p.risk]
+                    )}>
+                      {p.port}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            {/* Right — charts */}
-            <div className="space-y-6">
-              <motion.div initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
-                <RiskDistributionChart data={data.riskDistribution} />
-              </motion.div>
-              <motion.div initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25 }}>
-                <AssetsVsVulnsChart data={data.assetsVsVulns} />
-              </motion.div>
+            {/* RIGHT */}
+            <div className="space-y-8">
 
-              {/* Risk scorecard */}
-              <motion.div initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
-                <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-                  <h3 className="font-semibold text-white mb-4">Overall Risk Score</h3>
-                  <div className="relative h-2.5 bg-gray-800 rounded-full overflow-hidden mb-3">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${data.riskScore}%` }}
-                      transition={{ duration: 1.2, delay: 0.5, ease: 'easeOut' }}
-                      className={cn(
-                        'absolute top-0 left-0 h-full rounded-full',
-                        data.riskScore >= 70 ? 'bg-red-500' : data.riskScore >= 40 ? 'bg-amber-500' : 'bg-green-500'
-                      )}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between mb-5">
-                    <span className="text-sm text-gray-500">Score</span>
-                    <span className={cn(
-                      'text-2xl font-bold',
-                      data.riskScore >= 70 ? 'text-red-400' : data.riskScore >= 40 ? 'text-amber-400' : 'text-green-400'
-                    )}>
-                      {data.riskScore}<span className="text-sm text-gray-600">/100</span>
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2 text-center">
-                    {[
-                      { label: 'Critical', count: data.highRisk, color: 'text-red-400' },
-                      { label: 'Medium',   count: data.vulnerabilities - data.highRisk, color: 'text-amber-400' },
-                      { label: 'Secure',   count: data.totalAssets - data.vulnerabilities, color: 'text-green-400' },
-                    ].map(item => (
-                      <div key={item.label} className="bg-gray-800 rounded-lg p-3">
-                        <p className={cn('text-xl font-bold', item.color)}>{item.count}</p>
-                        <p className="text-xs text-gray-600 mt-0.5">{item.label}</p>
-                      </div>
-                    ))}
-                  </div>
+              <div className="border border-white/10 rounded-xl p-4 bg-black/40">
+                <RiskDistributionChart data={data.riskDistribution} />
+              </div>
+
+              <div className="border border-white/10 rounded-xl p-4 bg-black/40">
+                <AssetsVsVulnsChart data={data.assetsVsVulns} />
+              </div>
+
+              {/* SCORE */}
+              <div className="space-y-3">
+                <h3 className="text-sm text-white/50">Risk Score</h3>
+
+                <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${data.riskScore}%` }}
+                    className={cn(
+                      'h-full',
+                      data.riskScore >= 70 ? 'bg-red-500' :
+                      data.riskScore >= 40 ? 'bg-amber-500' :
+                      'bg-green-500'
+                    )}
+                  />
                 </div>
-              </motion.div>
+
+                <p className="text-white/70 text-sm">{data.riskScore}/100</p>
+              </div>
+
             </div>
           </div>
 
-          {/* AI Insights — full width */}
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
-            <div className="mb-5">
-              <h2 className="text-xl font-bold text-white">AI Security Analysis</h2>
-              <p className="text-sm text-gray-500 mt-0.5">Automated threat assessment and guided remediation</p>
+          {/* AI INSIGHTS */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-medium">
+              <span className="bg-[linear-gradient(144.5deg,_#ffffff,_rgba(255,255,255,0.4))] bg-clip-text text-transparent">
+                AI Security Analysis
+              </span>
+            </h2>
+
+            <div className="border border-white/10 rounded-xl p-6 bg-black/40">
+              <AIInsights insights={data.aiInsights} />
             </div>
-            <AIInsights insights={data.aiInsights} />
-          </motion.div>
+          </div>
 
         </div>
       </div>
