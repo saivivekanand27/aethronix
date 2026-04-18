@@ -10,34 +10,34 @@ SentinelScan is a proactive security engine that identifies subdomains, detects 
 [API Live](https://aethronix.onrender.com/security-audit)
 
 ## ✨ Key Features
-Automated Asset Discovery: Rapidly maps subdomains using HackerTarget and CRT.sh certificate logs.
+- Automated Asset Discovery: Rapidly maps subdomains using HackerTarget and CRT.sh certificate logs.
 
-Real-time Port Analysis: Deep-scan services and versions via Shodan API (or active Nmap scanning).
+- Real-time Port Analysis: Deep-scan services and versions via Shodan API (or active Nmap scanning).
 
-Local AI Analysis: Privacy-first intelligence using Ollama (Llama 3) to interpret raw technical data into human-readable risks.
+- Local AI Analysis: Privacy-first intelligence using Ollama (Llama 3) to interpret raw technical data into human-readable risks.
 
-Actionable Remediation: Generates specific CLI commands (Bash/Ansible) to close vulnerabilities instantly.
+- Actionable Remediation: Generates specific CLI commands (Bash/Ansible) to close vulnerabilities instantly.
 
-Demo Safety Mode: Built-in "Mock Mode" for stable presentations without API latency or rate-limit issues.
+- Demo Safety Mode: Built-in "Mock Mode" for stable presentations without API latency or rate-limit issues.
 
 ## 📝 Summary
 Modern security teams struggle with "Shadow IT"—assets deployed and forgotten by developers. SentinelScan bridges the gap between raw data and actionable wisdom. By automating the discovery-to-remediation pipeline, it allows security teams to identify a critical exposure (like an unauthenticated MongoDB) and fix it in under 60 seconds.
 
 ## 🧠 Local AI Integration (Ollama + Llama 3)
-Unlike traditional scanners that simply list ports, this project uses Ollama to host a local Llama 3 (8B) model for intelligent interpretation:
+- Unlike traditional scanners that simply list ports, this project uses Ollama to host a local Llama 3 (8B) model for intelligent interpretation:
 
-Privacy: No sensitive infrastructure data (IPs/Internal hostnames) ever leaves the local environment.
+- Privacy: No sensitive infrastructure data (IPs/Internal hostnames) ever leaves the local environment.
 
-Contextual Scoring: The AI evaluates the "weight" of a vulnerability. An open port 80 on a dev box is "Low," but an open port 27017 on a high-RAM instance is flagged as "Critical."
+- Contextual Scoring: The AI evaluates the "weight" of a vulnerability. An open port 80 on a dev box is "Low," but an open port 27017 on a high-RAM instance is flagged as "Critical."
 
-Remediation Logic: Llama 3 parses the specific service version detected and generates the exact patch command required for that specific OS.
+- Remediation Logic: Llama 3 parses the specific service version detected and generates the exact patch command required for that specific OS.
 
 ## 🌍 Real-World Use Cases
-DevSecOps Automation: Run as a CI/CD gate to ensure no new staging servers are left with debug ports open.
+- DevSecOps Automation: Run as a CI/CD gate to ensure no new staging servers are left with debug ports open.
 
-Mergers & Acquisitions: Rapidly audit the external attack surface of a target company during due diligence.
+- Mergers & Acquisitions: Rapidly audit the external attack surface of a target company during due diligence.
 
-Bug Bounty Hunting: Automate the reconnaissance phase to find low-hanging fruit like expired SSLs or forgotten subdomains.
+- Bug Bounty Hunting: Automate the reconnaissance phase to find low-hanging fruit like expired SSLs or forgotten subdomains.
 
 ## 🛠 Tech Stack
 Backend: Node.js, Express.js, TypeScript
