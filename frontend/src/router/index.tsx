@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { AppShell } from '../components/layout/AppShell'
 import { LoginPage } from '../pages/LoginPage'
-import { DashboardPage } from '../pages/DashboardPage'
+// import { DashboardPage } from '../pages/DashboardPage'
 import { AlertsPage } from '../pages/AlertsPage'
 import { AlertDetailPage } from '../pages/AlertDetailPage'
 import { ThreatIntelPage } from '../pages/ThreatIntelPage'
@@ -18,7 +18,7 @@ export function AppRouter() {
       <Route path="/login" element={<LoginPage />} />
       <Route element={<AppShell />}>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
+        {/* <Route path="/dashboard" element={<DashboardPage />} /> */}
         <Route path="/alerts" element={<AlertsPage />} />
         <Route path="/alerts/:id" element={<AlertDetailPage />} />
         <Route path="/threats" element={<ThreatIntelPage />} />
