@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://4e2a-157-66-153-106.ngrok-free.app'
+const API_BASE_URL = 'https://aethronix.onrender.com'
 
 export interface AuditResponse {
   domain: string
