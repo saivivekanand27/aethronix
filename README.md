@@ -21,7 +21,7 @@ SentinelScan is a proactive security engine that identifies subdomains, detects 
 - Demo Safety Mode: Built-in "Mock Mode" for stable presentations without API latency or rate-limit issues.
 
 ## 📝 Summary
-Modern security teams struggle with "Shadow IT"—assets deployed and forgotten by developers. SentinelScan bridges the gap between raw data and actionable wisdom. By automating the discovery-to-remediation pipeline, it allows security teams to identify a critical exposure (like an unauthenticated MongoDB) and fix it in under 60 seconds.
+Modern security teams struggle with "Shadow IT"—assets and "blackholes" deployed and forgotten by developers. SentinelScan bridges the gap between raw data and actionable wisdom. By automating the discovery-to-remediation pipeline, it allows security teams to identify a critical exposure (like an unauthenticated MongoDB) and fix it in under 60 seconds.
 
 ## 🧠 Local AI Integration (Ollama + Llama 3)
 - Unlike traditional scanners that simply list ports, this project uses Ollama to host a local Llama 3 (8B) model for intelligent interpretation:
